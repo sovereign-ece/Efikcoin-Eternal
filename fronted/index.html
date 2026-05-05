@@ -1,0 +1,38 @@
+mintBtn.onclick = () => {
+    if (!walletAddress) {
+        updateStatus("CONNECT WALLET TO MINE", "#ff4444");
+        return;
+    }
+    
+    updateStatus("LOADING AD...");
+    AdController.show().then(async (result) => {
+        updateStatus("VERIFYING & SENDING $ECE...");
+        
+        // Call your backend to send real tokens
+        const response = await fetch('https://YOUR-PROJECT.cloudfunctions.net/mineEce', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ 
+                walletAddress: walletAddress,
+                telegramUserId: userId 
+            })
+        });
+        const data = await response.json();
+        
+        if(data.success) {
+            bal += MINT_REWARD; // still update local UI
+            totalAdsWatched++;
+            lastMintTime = Date.now();
+            localStorage.setItem('ece_lastMint', lastMintTime);
+            localStorage.setItem('ece_ads', totalAdsWatched);
+            updateBalance();
+            updateStatus(`SUCCESS: ${MINT_REWARD} $ECE SENT! TX: ${data.txHash.slice(0,10)}...`, "#00ff00");
+            tg.HapticFeedback.notificationOccurred('success');
+            checkCooldown();
+        } else {
+            updateStatus("MINT FAILED - CONTACT SUPPORT", "#ff4444");
+        }
+    }).catch((err) => {
+        updateStatus("AD SKIPPED - NO REWARD", "#ff4444");
+    });
+};
