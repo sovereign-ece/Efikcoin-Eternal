@@ -2,397 +2,427 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EfikCoin Eternal (ECE) - Official Token Portal</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Efikcoin Eternal | Sovereign Hub</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://sad.adsgram.ai/js/adsgram-ad-sdk.js"></script>
+    <script src="https://unpkg.com/@web3modal/standalone@3.5.7/dist/standalone.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.0/dist/ethers.umd.min.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background: #0a0e1a; }
-        .font-display { font-family: 'Space Grotesk', sans-serif; }
-        .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
-        .gradient-text { background: linear-gradient(135deg, #00d4ff 0%, #7b2ff7 50%, #ff006e 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .glow { box-shadow: 0 0 40px rgba(0,212,255,0.15); }
-        .btn-primary { background: linear-gradient(135deg, #00d4ff 0%, #7b2ff7 100%); transition: all 0.3s ease; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(0,212,255,0.3); }
-        .card-hover { transition: all 0.3s ease; }
-        .card-hover:hover { transform: translateY(-5px); border-color: rgba(0,212,255,0.3); }
-        .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-        .float { animation: float 6s ease-in-out infinite; }
-        .grid-bg { background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0); background-size: 40px 40px; }
+        :root { --gold: #D4AF37; --bg: #000; --green: #00ff00; --red: #ff4444; }
+        * { box-sizing: border-box; }
+        body { 
+            background: var(--bg); 
+            color: white; 
+            font-family: system-ui, -apple-system, serif; 
+            margin: 0; 
+            padding: 0 0 40px 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh; 
+        }
+        .header { width: 100%; padding: 20px 10px 10px; text-align: center; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
+        h1 { font-size: 1.8rem; color: var(--gold); margin: 0; letter-spacing: 3px; font-weight: 700; }
+        p.sub { font-size: 0.85rem; margin: 8px 0 0 0; opacity: 0.7; }
+        
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr 1fr; 
+            gap: 10px; 
+            width: 95%; 
+            max-width: 500px; 
+            margin: 20px 0; 
+        }
+        .stat { 
+            background: rgba(255,255,255,0.04); 
+            border: 1px solid rgba(212, 175, 55, 0.2); 
+            border-radius: 12px; 
+            padding: 12px 8px; 
+            text-align: center;
+        }
+        .stat-label { font-size: 0.65rem; color: #888; letter-spacing: 0.5px; }
+        .stat-value { font-size: 1rem; color: var(--gold); font-weight: bold; margin-top: 4px; }
+        
+        .app-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 90%; max-width: 400px; margin: 10px 0 20px; }
+        .coin-btn { grid-column: 1 / 3; grid-row: 1 / 3; width: 150px; height: 150px; margin: 0 auto; cursor: pointer; transition: 0.2s; border: none; background: none; outline: none; position: relative; }
+        .coin-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .coin-btn img { width: 100%; height: 100%; filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.7)); }
+        .coin-btn:active:not(:disabled) { transform: scale(0.92); }
+        .cooldown-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: bold; color: var(--gold); }
+        
+        .feature { background: rgba(255,255,255,0.05); border: 1px solid rgba(212, 175, 55, 0.25); border-radius: 12px; padding: 14px 10px; font-size: 0.75rem; font-weight: 600; color: var(--gold); display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.2s; }
+        .feature:active { transform: scale(0.96); background: rgba(212, 175, 55, 0.1); }
+        .feature span { color: white; margin-top: 5px; font-size: 0.65rem; font-weight: 400; }
+        
+        .bal-container { margin: 20px 0; text-align: center; }
+        .bal-label { font-size: 0.75rem; letter-spacing: 1px; color: #888; }
+        #balance { font-size: 2.8rem; font-weight: 800; color: #FFD700; line-height: 1; margin: 8px 0; }
+        #usdValue { font-size: 1rem; color: #00ff00; font-weight: 600; }
+        
+        #status { margin: 15px 0; font-size: 0.75rem; color: #00f2ff; background: rgba(0,0,0,0.6); padding: 8px 18px; border-radius: 20px; min-height: 24px; border: 1px solid rgba(0, 242, 255, 0.2); }
+        
+        .wallet-section { width: 90%; max-width: 400px; margin: 15px 0; }
+        #walletBtn, #withdrawBtn, #buyBtn { background: linear-gradient(135deg, #D4AF37, #FFD700); color: #000; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; width: 100%; cursor: pointer; margin: 6px 0; transition: 0.2s; }
+        #walletBtn:active, #withdrawBtn:active, #buyBtn:active { transform: scale(0.98); }
+        #walletBtn.connected { background: rgba(0,255,0,0.15); border: 1px solid var(--green); color: var(--green); }
+        #withdrawBtn:disabled { opacity: 0.3; cursor: not-allowed; }
+        
+        .token-info { font-size: 0.65rem; opacity: 0.4; margin-top: 10px; word-break: break-all; text-align: center; }
+        .token-info a { color: var(--gold); text-decoration: none; }
+        
+        .tabs { display: flex; width: 90%; max-width: 400px; margin: 25px 0 15px; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
+        .tab { flex: 1; padding: 12px; font-size: 0.8rem; font-weight: 600; color: #888; cursor: pointer; border-bottom: 2px solid transparent; transition: 0.2s; }
+        .tab.active { color: var(--gold); border-bottom: 2px solid var(--gold); }
+        
+        .tab-content { width: 90%; max-width: 400px; display: none; }
+        .tab-content.active { display: block; }
+        
+        .nft-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 15px 0; }
+        .nft-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 10px; padding: 10px; text-align: center; }
+        .nft-card img { width: 100%; border-radius: 8px; margin-bottom: 8px; }
+        .nft-name { font-size: 0.7rem; font-weight: 600; color: white; }
+        .nft-price { font-size: 0.7rem; color: var(--gold); margin-top: 4px; }
     </style>
 </head>
-<body class="text-white min-h-screen grid-bg">
-    <!-- Navigation -->
-    <nav class="fixed w-full z-50 glass border-b border-white/5">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-purple-600 flex items-center justify-center font-bold text-lg">E</div>
-                    <span class="font-display font-bold text-xl tracking-tight">EfikCoin<span class="text-cyan-400">Eternal</span></span>
-                </div>
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="#token" class="text-gray-300 hover:text-white transition">Token</a>
-                    <a href="#wallet" class="text-gray-300 hover:text-white transition">Connect</a>
-                    <a href="#contracts" class="text-gray-300 hover:text-white transition">Contracts</a>
-                    <button id="connectBtn" onclick="connectWallet()" class="btn-primary px-6 py-2 rounded-full font-medium text-sm">
-                        Connect Wallet
-                    </button>
-                </div>
-            </div>
+<body>
+
+    <div class="header">
+        <h1>EFIKCOIN ETERNAL</h1>
+        <p class="sub">Sovereign Finance Ecosystem | BSC Mainnet</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat">
+            <div class="stat-label">PRICE</div>
+            <div class="stat-value" id="tokenPrice">$0.00</div>
         </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="pt-32 pb-20 px-4 relative overflow-hidden">
-        <div class="absolute top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl"></div>
-        <div class="max-w-5xl mx-auto text-center relative z-10">
-            <div class="inline-flex items-center space-x-2 px-4 py-2 rounded-full glass mb-8 border border-cyan-500/20">
-                <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                <span class="text-sm text-cyan-300">Live on BNB Smart Chain</span>
-            </div>
-            <h1 class="font-display text-5xl md:text-7xl font-bold mb-6 leading-tight">
-                <span class="gradient-text">EfikCoin Eternal</span>
-            </h1>
-            <p class="text-xl text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-                The next generation digital asset on BNB Smart Chain. Secure, transparent, and built for the future of decentralized finance.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <button onclick="scrollToSection('wallet')" class="btn-primary px-8 py-4 rounded-full font-semibold text-lg flex items-center justify-center space-x-2">
-                    <span>Connect Wallet</span>
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                </button>
-                <a href="https://bscscan.com/token/0x9F8C29E496ECB6C39c221458f211234DfCB233E0" target="_blank" class="glass px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/5 transition flex items-center justify-center space-x-2">
-                    <span>View on BSCScan</span>
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                </a>
-            </div>
+        <div class="stat">
+            <div class="stat-label">LIQUIDITY</div>
+            <div class="stat-value" id="liquidity">$0</div>
         </div>
-    </section>
-
-    <!-- Token Stats -->
-    <section id="token" class="py-20 px-4">
-        <div class="max-w-7xl mx-auto">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="glass rounded-2xl p-8 card-hover">
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-gray-400 text-sm font-medium">Token Symbol</span>
-                        <div class="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center">
-                            <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        </div>
-                    </div>
-                    <h3 class="text-3xl font-display font-bold text-white">ECE</h3>
-                    <p class="text-gray-500 text-sm mt-2">EfikCoin Eternal</p>
-                </div>
-
-                <div class="glass rounded-2xl p-8 card-hover">
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-gray-400 text-sm font-medium">Network</span>
-                        <div class="w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center">
-                            <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        </div>
-                    </div>
-                    <h3 class="text-3xl font-display font-bold text-white">BSC</h3>
-                    <p class="text-gray-500 text-sm mt-2">BNB Smart Chain</p>
-                </div>
-
-                <div class="glass rounded-2xl p-8 card-hover">
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-gray-400 text-sm font-medium">Contract Status</span>
-                        <div class="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
-                            <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        </div>
-                    </div>
-                    <h3 class="text-3xl font-display font-bold text-white">Verified</h3>
-                    <p class="text-gray-500 text-sm mt-2">Source on BSCScan</p>
-                </div>
-            </div>
+        <div class="stat">
+            <div class="stat-label">HOLDERS</div>
+            <div class="stat-value" id="holders">0</div>
         </div>
-    </section>
+    </div>
 
-    <!-- Wallet Connection -->
-    <section id="wallet" class="py-20 px-4 relative">
-        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-purple-900/10 to-transparent"></div>
-        <div class="max-w-4xl mx-auto relative z-10">
-            <div class="glass rounded-3xl p-8 md:p-12 glow">
-                <div class="text-center mb-10">
-                    <h2 class="font-display text-3xl md:text-4xl font-bold mb-4">Connect Your Wallet</h2>
-                    <p class="text-gray-400">Securely connect your existing wallet to view your ECE balance and interact with the token.</p>
-                </div>
+    <div class="app-grid">
+        <div class="feature" id="mineFeature">⚙️ TAP TO<span>MINE ECE</span></div>
+        <div class="feature" id="walletFeature">👛 SECURE<span>WALLET</span></div>
+        
+        <button class="coin-btn" id="mintAction">
+            <img src="https://cdn-icons-png.flaticon.com/512/2585/2585244.png" alt="ECE Coin">
+            <div class="cooldown-overlay" id="cooldownOverlay"></div>
+        </button>
 
-                <div id="walletNotConnected" class="space-y-4">
-                    <button onclick="connectMetaMask()" class="w-full glass hover:bg-white/5 border border-white/10 rounded-xl p-6 flex items-center space-x-4 transition group">
-                        <div class="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center">
-                            <svg class="w-6 h-6 text-orange-400" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 13 13 5.91 2.38 5.91 12 13z" fill="#E17726"/><path d="M12 13l-4.35-2.82-1.76 4.39L12 13z" fill="#E27625"/><path d="M12 13v6.46l4.36-2.18-1.76-4.28L12 13z" fill="#E27625"/></svg>
-                        </div>
-                        <div class="flex-1 text-left">
-                            <h3 class="font-semibold text-lg group-hover:text-cyan-400 transition">MetaMask</h3>
-                            <p class="text-sm text-gray-500">Connect via browser extension</p>
-                        </div>
-                        <svg class="w-5 h-5 text-gray-600 group-hover:text-cyan-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                    </button>
+        <div class="feature" id="adsFeature">📺 WATCH<span>ADS & EARN</span></div>
+        <div class="feature" id="nftFeature">🖼️ NFT<span>MARKET</span></div>
+    </div>
 
-                    <button onclick="connectTrustWallet()" class="w-full glass hover:bg-white/5 border border-white/10 rounded-xl p-6 flex items-center space-x-4 transition group">
-                        <div class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center">
-                            <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                        </div>
-                        <div class="flex-1 text-left">
-                            <h3 class="font-semibold text-lg group-hover:text-cyan-400 transition">Trust Wallet</h3>
-                            <p class="text-sm text-gray-500">Mobile & browser extension</p>
-                        </div>
-                        <svg class="w-5 h-5 text-gray-600 group-hover:text-cyan-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                    </button>
+    <div class="bal-container">
+        <div class="bal-label">YOUR $ECE BALANCE</div>
+        <div id="balance">0.00</div>
+        <div id="usdValue">≈ $0.00 USD</div>
+    </div>
 
-                    <div class="glass rounded-xl p-6 border border-yellow-500/20 bg-yellow-500/5">
-                        <div class="flex items-start space-x-3">
-                            <svg class="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                            <div>
-                                <h4 class="font-semibold text-yellow-400 mb-1">Security Notice</h4>
-                                <p class="text-sm text-gray-400">We never ask for your private keys or seed phrase. Always connect through official wallet apps only.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="walletConnected" class="hidden space-y-6">
-                    <div class="glass rounded-xl p-6 border border-cyan-500/20 bg-cyan-500/5">
-                        <div class="flex items-center justify-between mb-4">
-                            <span class="text-gray-400 text-sm">Connected Address</span>
-                            <button onclick="disconnectWallet()" class="text-red-400 text-sm hover:text-red-300 transition">Disconnect</button>
-                        </div>
-                        <p id="connectedAddress" class="font-mono text-cyan-400 text-lg break-all"></p>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="glass rounded-xl p-6">
-                            <span class="text-gray-400 text-sm">ECE Balance</span>
-                            <p id="tokenBalance" class="text-3xl font-display font-bold text-white mt-2">--</p>
-                        </div>
-                        <div class="glass rounded-xl p-6">
-                            <span class="text-gray-400 text-sm">BNB Balance</span>
-                            <p id="bnbBalance" class="text-3xl font-display font-bold text-white mt-2">--</p>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-4">
-                        <button onclick="addTokenToWallet()" class="flex-1 btn-primary py-3 rounded-xl font-semibold transition">
-                            Add ECE to Wallet
-                        </button>
-                        <a href="https://pancakeswap.finance/swap?outputCurrency=0x9F8C29E496ECB6C39c221458f211234DfCB233E0" target="_blank" class="flex-1 glass py-3 rounded-xl font-semibold text-center hover:bg-white/5 transition border border-white/10">
-                            Trade on PancakeSwap
-                        </a>
-                    </div>
-                </div>
-            </div>
+    <div class="wallet-section">
+        <button id="walletBtn">CONNECT BSC WALLET</button>
+        <button id="buyBtn">BUY $ECE ON PANCAKESWAP</button>
+        <button id="withdrawBtn" disabled>WITHDRAW MINED $ECE</button>
+        <div class="token-info">
+            Token: <a href="https://bscscan.com/token/0x9F8C29E496ECB6C39c221458f211234DfCB233E0" target="_blank">0x9F8C...33E0</a><br>
+            LP: <a href="https://bscscan.com/address/0x7FAbe1cc407f0e01c3cdF5Cc05744f8D98bC70B6" target="_blank">0x7FAb...70B6</a>
         </div>
-    </section>
+    </div>
 
-    <!-- Contract Info -->
-    <section id="contracts" class="py-20 px-4">
-        <div class="max-w-4xl mx-auto">
-            <h2 class="font-display text-3xl font-bold text-center mb-12">Contract Information</h2>
+    <div id="status">ENGINE READY. CONNECT WALLET TO START.</div>
 
-            <div class="glass rounded-2xl p-8 space-y-6">
-                <div class="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5">
-                    <div class="mb-2 md:mb-0">
-                        <span class="text-gray-400 text-sm block mb-1">Token Contract</span>
-                        <span class="font-mono text-cyan-400 text-sm md:text-base break-all">0x9F8C29E496ECB6C39c221458f211234DfCB233E0</span>
-                    </div>
-                    <div class="flex space-x-2 mt-2 md:mt-0">
-                        <button onclick="copyToClipboard('0x9F8C29E496ECB6C39c221458f211234DfCB233E0')" class="px-4 py-2 rounded-lg glass hover:bg-white/10 transition text-sm">Copy</button>
-                        <a href="https://bscscan.com/token/0x9F8C29E496ECB6C39c221458f211234DfCB233E0" target="_blank" class="px-4 py-2 rounded-lg glass hover:bg-white/10 transition text-sm">BSCScan</a>
-                    </div>
-                </div>
+    <div class="tabs">
+        <div class="tab active" data-tab="trade">TRADE</div>
+        <div class="tab" data-tab="nft">NFTs</div>
+        <div class="tab" data-tab="earn">EARN</div>
+    </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="p-4 rounded-xl bg-white/5 border border-white/5">
-                        <span class="text-gray-400 text-sm block mb-1">Token Standard</span>
-                        <span class="text-white font-semibold">BEP-20</span>
-                    </div>
-                    <div class="p-4 rounded-xl bg-white/5 border border-white/5">
-                        <span class="text-gray-400 text-sm block mb-1">Decimals</span>
-                        <span id="tokenDecimals" class="text-white font-semibold">--</span>
-                    </div>
-                    <div class="p-4 rounded-xl bg-white/5 border border-white/5">
-                        <span class="text-gray-400 text-sm block mb-1">Total Supply</span>
-                        <span id="totalSupply" class="text-white font-semibold">--</span>
-                    </div>
-                    <div class="p-4 rounded-xl bg-white/5 border border-white/5">
-                        <span class="text-gray-400 text-sm block mb-1">Owner</span>
-                        <span id="tokenOwner" class="text-white font-semibold text-sm break-all">--</span>
-                    </div>
-                </div>
-            </div>
+    <div class="tab-content active" id="trade">
+        <button id="buyBtn2" style="background: linear-gradient(135deg, #00ff00, #00cc00); color: #000; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; width: 100%; cursor: pointer; margin: 10px 0;">SWAP BNB FOR $ECE</button>
+        <button id="chartBtn" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(212, 175, 55, 0.25); color: var(--gold); padding: 14px 20px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; width: 100%; cursor: pointer; margin: 6px 0;">VIEW CHART</button>
+    </div>
+
+    <div class="tab-content" id="nft">
+        <div class="nft-grid" id="nftGrid">
+            <div style="grid-column: 1/3; text-align: center; opacity: 0.5; padding: 20px; font-size: 0.8rem;">NFT Marketplace launching Q2. Connect wallet to see your ECE NFTs.</div>
         </div>
-    </section>
+    </div>
 
-    <!-- Features -->
-    <section class="py-20 px-4">
-        <div class="max-w-6xl mx-auto">
-            <h2 class="font-display text-3xl font-bold text-center mb-12">Token Features</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="glass rounded-2xl p-8 card-hover">
-                    <div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center mb-4">
-                        <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                    </div>
-                    <h3 class="font-semibold text-lg mb-2">Ownership Control</h3>
-                    <p class="text-gray-400 text-sm">Transferable ownership with renounce capability for decentralized governance.</p>
-                </div>
-
-                <div class="glass rounded-2xl p-8 card-hover">
-                    <div class="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center mb-4">
-                        <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                    </div>
-                    <h3 class="font-semibold text-lg mb-2">Mint & Burn</h3>
-                    <p class="text-gray-400 text-sm">Controlled supply expansion and deflationary mechanisms for tokenomics.</p>
-                </div>
-
-                <div class="glass rounded-2xl p-8 card-hover">
-                    <div class="w-12 h-12 rounded-xl bg-pink-500/20 flex items-center justify-center mb-4">
-                        <svg class="w-6 h-6 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    </div>
-                    <h3 class="font-semibold text-lg mb-2">IPFS Metadata</h3>
-                    <p class="text-gray-400 text-sm">Decentralized metadata storage with update capability for rich token info.</p>
-                </div>
-            </div>
+    <div class="tab-content" id="earn">
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 10px; padding: 15px; margin: 15px 0; font-size: 0.75rem; line-height: 1.6; text-align: left;">
+            <strong style="color: var(--gold);">How you earn:</strong><br>
+            1. Tap coin → Watch ad → Earn 100 $ECE<br>
+            2. 70% of ad revenue buys $ECE from LP<br>
+            3. 10% distributed to holders monthly<br>
+            4. 20% funds development & burns<br><br>
+            <strong style="color: var(--gold);">Your stats:</strong><br>
+            Ads watched: <span id="adsWatched">0</span><br>
+            Total mined: <span id="totalMined">0</span> $ECE
         </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="border-t border-white/5 py-12 px-4">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
-            <div class="flex items-center space-x-3 mb-4 md:mb-0">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-purple-600 flex items-center justify-center font-bold text-sm">E</div>
-                <span class="font-display font-bold">EfikCoinEternal</span>
-            </div>
-            <div class="flex space-x-6 text-sm text-gray-500">
-                <span>Built for the community</span>
-                <span>•</span>
-                <span>BNB Smart Chain</span>
-            </div>
-        </div>
-    </footer>
+    </div>
 
     <script>
-        const TOKEN_CONTRACT = "0x9F8C29E496ECB6C39c221458f211234DfCB233E0";
-        const TOKEN_ABI = [{"inputs":[{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"symbol","type":"string"},{"internalType":"uint8","name":"decimals","type":"uint8"},{"internalType":"uint256","name":"supply","type":"uint256"},{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"feeWallet","type":"address"},{"internalType":"string","name":"metadata_ipfs_hash","type":"string"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"string","name":"metadata_ipfs_hash","type":"string"}],"name":"MetadataUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"owner","type":"address"}],"name":"TeamFinanceTokenMint","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"burn","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"burnFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"metadata","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"metadata_ipfs_hash","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"mint","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"string","name":"metadata_ipfs_hash","type":"string"}],"name":"updateMetadata","outputs":[],"stateMutability":"nonpayable","type":"function"}];
-
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        
+        // === LIVE MAINNET CONFIG ===
+        const ADSGRAM_BLOCK_ID = "29505";
+        const WALLETCONNECT_PROJECT_ID = "dd82ebe727bf8bffca60f9d85a2541e4";
+        const ECE_TOKEN_ADDRESS = "0x9F8C29E496ECB6C39c221458f211234DfCB233E0";
+        const LP_PAIR_ADDRESS = "0x7FAbe1cc407f0e01c3cdF5Cc05744f8D98bC70B6";
+        const WBNB_ADDRESS = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
+        const BSC_CHAIN_ID = 56;
         const BSC_RPC = "https://bsc-dataseed.binance.org/";
-        let provider, signer, contract, userAddress;
+        
+        const COOLDOWN_SECONDS = 45;
+        const MINT_REWARD = 100;
+        const MIN_WITHDRAW = 10000;
+        let ECE_USD_PRICE = 0.001;
+        let BNB_USD_PRICE = 600;
+        
+        // === ABIs ===
+        const PAIR_ABI = [
+            "function getReserves() view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)",
+            "function token0() view returns (address)",
+            "function token1() view returns (address)",
+            "function totalSupply() view returns (uint256)"
+        ];
+        const ERC20_ABI = [
+            "function decimals() view returns (uint8)",
+            "function balanceOf(address) view returns (uint256)",
+            "function totalSupply() view returns (uint256)"
+        ];
 
-        async function connectMetaMask() {
-            if (typeof window.ethereum === 'undefined') {
-                alert('Please install MetaMask first!');
+        // === INIT ===
+        const AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
+        const web3Modal = window.Web3ModalStandalone.Web3ModalStandalone;
+        const modal = web3Modal.create({
+            projectId: WALLETCONNECT_PROJECT_ID,
+            standaloneChains: [`eip155:${BSC_CHAIN_ID}`],
+            themeMode: "dark"
+        });
+
+        // === STATE ===
+        let bal = parseFloat(localStorage.getItem('ece_bal')) || 0;
+        let totalAdsWatched = parseInt(localStorage.getItem('ece_ads')) || 0;
+        let lastMintTime = parseInt(localStorage.getItem('ece_lastMint')) || 0;
+        let walletAddress = localStorage.getItem('ece_wallet') || null;
+        let provider = null;
+        let signer = null;
+
+        // === UI ELEMENTS ===
+        const balEl = document.getElementById('balance');
+        const usdEl = document.getElementById('usdValue');
+        const statusEl = document.getElementById('status');
+        const mintBtn = document.getElementById('mintAction');
+        const cooldownOverlay = document.getElementById('cooldownOverlay');
+        const walletBtn = document.getElementById('walletBtn');
+        const withdrawBtn = document.getElementById('withdrawBtn');
+        const buyBtn = document.getElementById('buyBtn');
+        const buyBtn2 = document.getElementById('buyBtn2');
+        const chartBtn = document.getElementById('chartBtn');
+        const tokenPriceEl = document.getElementById('tokenPrice');
+        const liquidityEl = document.getElementById('liquidity');
+        const holdersEl = document.getElementById('holders');
+        const adsWatchedEl = document.getElementById('adsWatched');
+        const totalMinedEl = document.getElementById('totalMined');
+
+        // === CORE FUNCTIONS ===
+        function updateBalance() {
+            balEl.innerText = bal.toLocaleString('en-US', {maximumFractionDigits: 2});
+            usdEl.innerText = `≈ $${(bal * ECE_USD_PRICE).toFixed(2)} USD`;
+            localStorage.setItem('ece_bal', bal);
+            adsWatchedEl.innerText = totalAdsWatched.toLocaleString();
+            totalMinedEl.innerText = bal.toLocaleString();
+            withdrawBtn.disabled = bal < MIN_WITHDRAW || !walletAddress;
+        }
+
+        function updateStatus(msg, color = "#00f2ff") {
+            statusEl.innerText = msg;
+            statusEl.style.color = color;
+        }
+
+        function checkCooldown() {
+            const now = Date.now();
+            const timeLeft = Math.ceil((lastMintTime + COOLDOWN_SECONDS * 1000 - now) / 1000);
+            if (timeLeft > 0) {
+                mintBtn.disabled = true;
+                cooldownOverlay.style.display = 'flex';
+                cooldownOverlay.innerText = timeLeft + 's';
+                setTimeout(checkCooldown, 1000);
+            } else {
+                mintBtn.disabled = false;
+                cooldownOverlay.style.display = 'none';
+            }
+        }
+
+        function updateWalletUI() {
+            if (walletAddress) {
+                walletBtn.innerText = walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4);
+                walletBtn.classList.add('connected');
+            } else {
+                walletBtn.innerText = 'CONNECT BSC WALLET';
+                walletBtn.classList.remove('connected');
+            }
+            withdrawBtn.disabled = bal < MIN_WITHDRAW || !walletAddress;
+        }
+
+        async function fetchLiveData() {
+            try {
+                updateStatus("SYNCING WITH BSC MAINNET...");
+                const provider = new ethers.JsonRpcProvider(BSC_RPC);
+                const pair = new ethers.Contract(LP_PAIR_ADDRESS, PAIR_ABI, provider);
+                
+                const [reserve0, reserve1] = await pair.getReserves();
+                const token0 = await pair.token0();
+                
+                const eceToken = new ethers.Contract(ECE_TOKEN_ADDRESS, ERC20_ABI, provider);
+                const wbnbToken = new ethers.Contract(WBNB_ADDRESS, ERC20_ABI, provider);
+                const eceDecimals = await eceToken.decimals();
+                const wbnbDecimals = await wbnbToken.decimals();
+                
+                let eceReserve, bnbReserve;
+                if (token0.toLowerCase() === ECE_TOKEN_ADDRESS.toLowerCase()) {
+                    eceReserve = reserve0; bnbReserve = reserve1;
+                } else {
+                    eceReserve = reserve1; bnbReserve = reserve0;
+                }
+                
+                const ecePriceInBNB = (Number(bnbReserve) / 10**Number(wbnbDecimals)) / (Number(eceReserve) / 10**Number(eceDecimals));
+                
+                const bnbPriceRes = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BNBUSDT');
+                const bnbData = await bnbPriceRes.json();
+                BNB_USD_PRICE = parseFloat(bnbData.price);
+                
+                ECE_USD_PRICE = ecePriceInBNB * BNB_USD_PRICE;
+                const liquidityUSD = (Number(bnbReserve) / 10**Number(wbnbDecimals)) * BNB_USD_PRICE * 2;
+                
+                tokenPriceEl.innerText = `$${ECE_USD_PRICE.toFixed(6)}`;
+                liquidityEl.innerText = `$${(liquidityUSD / 1000).toFixed(1)}K`;
+                
+                updateBalance();
+                updateStatus(`LIVE: 1 ECE = $${ECE_USD_PRICE.toFixed(6)} | BNB $${BNB_USD_PRICE.toFixed(0)}`, "#00ff00");
+                
+            } catch(e) { 
+                console.log("LP fetch failed:", e);
+                updateStatus("LIVE DATA OFFLINE - RETRYING...", "#ffaa00");
+            }
+        }
+
+        // === WALLET CONNECT ===
+        walletBtn.onclick = async () => {
+            if (walletAddress) {
+                walletAddress = null; provider = null; signer = null;
+                localStorage.removeItem('ece_wallet');
+                updateWalletUI();
+                updateStatus("WALLET DISCONNECTED", "#ff4444");
+            } else {
+                try {
+                    updateStatus("OPENING WALLET...");
+                    const session = await modal.connect();
+                    provider = new ethers.BrowserProvider(session);
+                    signer = await provider.getSigner();
+                    walletAddress = await signer.getAddress();
+                    
+                    const network = await provider.getNetwork();
+                    if (Number(network.chainId) !== BSC_CHAIN_ID) {
+                        updateStatus("SWITCH TO BSC MAINNET", "#ff4444");
+                        await provider.send("wallet_switchEthereumChain", [{ chainId: "0x38" }]);
+                    }
+                    
+                    localStorage.setItem('ece_wallet', walletAddress);
+                    updateWalletUI();
+                    updateStatus("WALLET CONNECTED TO BSC", "#00ff00");
+                    tg.HapticFeedback.notificationOccurred('success');
+                    fetchLiveData();
+                } catch (e) {
+                    updateStatus("CONNECTION FAILED", "#ff4444");
+                    console.log(e);
+                }
+            }
+        };
+
+        // === MINE FUNCTION ===
+        mintBtn.onclick = () => {
+            if (!walletAddress) {
+                updateStatus("CONNECT WALLET TO MINE", "#ff4444");
+                tg.HapticFeedback.notificationOccurred('error');
                 return;
             }
-            try {
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                provider = new ethers.providers.Web3Provider(window.ethereum);
-                signer = provider.getSigner();
-                await setupWallet();
-            } catch (err) {
-                console.error(err);
-                alert('Connection failed: ' + err.message);
+            
+            updateStatus("LOADING AD...");
+            AdController.show().then((result) => {
+                bal += MINT_REWARD;
+                totalAdsWatched++;
+                lastMintTime = Date.now();
+                localStorage.setItem('ece_lastMint', lastMintTime);
+                localStorage.setItem('ece_ads', totalAdsWatched);
+                
+                updateBalance();
+                updateStatus(`+${MINT_REWARD} $ECE MINED | Total: ${totalAdsWatched} ads`, "#00ff00");
+                tg.HapticFeedback.notificationOccurred('success');
+                checkCooldown();
+            }).catch((err) => {
+                updateStatus("AD SKIPPED - NO REWARD", "#ff4444");
+                tg.HapticFeedback.notificationOccurred('error');
+            });
+        };
+
+        // === BUY / TRADE ===
+        const openPancakeSwap = () => {
+            const url = `https://pancakeswap.finance/swap?outputCurrency=${ECE_TOKEN_ADDRESS}&chain=bsc`;
+            tg.openLink(url);
+        };
+        buyBtn.onclick = openPancakeSwap;
+        buyBtn2.onclick = openPancakeSwap;
+        
+        chartBtn.onclick = () => {
+            tg.openLink(`https://dexscreener.com/bsc/${LP_PAIR_ADDRESS}`);
+        };
+
+        // === WITHDRAW ===
+        withdrawBtn.onclick = async () => {
+            if (bal < MIN_WITHDRAW) {
+                updateStatus(`MIN ${MIN_WITHDRAW.toLocaleString()} ECE TO WITHDRAW`, "#ff4444");
+                return;
             }
-        }
+            updateStatus("WITHDRAWALS: Contact @EfikcoinSupport on Telegram");
+            tg.openTelegramLink("https://t.me/EfikcoinSupport");
+        };
 
-        async function connectTrustWallet() {
-            const trustWalletDeepLink = `https://link.trustwallet.com/open_url?coin_id=20000714&url=${encodeURIComponent(window.location.href)}`;
-            window.location.href = trustWalletDeepLink;
-        }
-
-        async function setupWallet() {
-            userAddress = await signer.getAddress();
-            contract = new ethers.Contract(TOKEN_CONTRACT, TOKEN_ABI, signer);
-
-            document.getElementById('walletNotConnected').classList.add('hidden');
-            document.getElementById('walletConnected').classList.remove('hidden');
-            document.getElementById('connectBtn').textContent = userAddress.slice(0,6) + '...' + userAddress.slice(-4);
-            document.getElementById('connectedAddress').textContent = userAddress;
-
-            await loadTokenData();
-            await loadBalances();
-        }
-
-        async function loadTokenData() {
-            try {
-                const readContract = new ethers.Contract(TOKEN_CONTRACT, TOKEN_ABI, new ethers.providers.JsonRpcProvider(BSC_RPC));
-                const [name, symbol, decimals, supply, owner] = await Promise.all([
-                    readContract.name(),
-                    readContract.symbol(),
-                    readContract.decimals(),
-                    readContract.totalSupply(),
-                    readContract.owner()
-                ]);
-
-                document.getElementById('tokenDecimals').textContent = decimals;
-                document.getElementById('totalSupply').textContent = ethers.utils.formatUnits(supply, decimals) + ' ' + symbol;
-                document.getElementById('tokenOwner').textContent = owner;
-            } catch (err) {
-                console.error('Error loading token data:', err);
-            }
-        }
-
-        async function loadBalances() {
-            try {
-                const bnbBalance = await provider.getBalance(userAddress);
-                const tokenBalance = await contract.balanceOf(userAddress);
-                const decimals = await contract.decimals();
-                const symbol = await contract.symbol();
-
-                document.getElementById('bnbBalance').textContent = parseFloat(ethers.utils.formatEther(bnbBalance)).toFixed(4) + ' BNB';
-                document.getElementById('tokenBalance').textContent = ethers.utils.formatUnits(tokenBalance, decimals) + ' ' + symbol;
-            } catch (err) {
-                console.error('Error loading balances:', err);
-            }
-        }
-
-        async function addTokenToWallet() {
-            try {
-                const symbol = await contract.symbol();
-                const decimals = await contract.decimals();
-
-                await window.ethereum.request({
-                    method: 'wallet_watchAsset',
-                    params: {
-                        type: 'ERC20',
-                        options: {
-                            address: TOKEN_CONTRACT,
-                            symbol: symbol,
-                            decimals: decimals,
-                            image: ''
-                        }
-                    }
-                });
-            } catch (err) {
-                console.error(err);
-            }
-        }
-
-        function disconnectWallet() {
-            provider = null;
-            signer = null;
-            contract = null;
-            userAddress = null;
-            document.getElementById('walletNotConnected').classList.remove('hidden');
-            document.getElementById('walletConnected').classList.add('hidden');
-            document.getElementById('connectBtn').textContent = 'Connect Wallet';
-        }
-
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text);
-            alert('Copied to clipboard!');
-        }
-
-        function scrollToSection(id) {
-            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Auto-load token data on page load (read-only)
-        window.addEventListener('load', async () => {
-            await loadTokenData();
+        // === TABS ===
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.onclick = () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            };
         });
+
+        // === SHORTCUTS ===
+        document.getElementById('walletFeature').onclick = () => walletBtn.click();
+        document.getElementById('mineFeature').onclick = () => mintBtn.click();
+        document.getElementById('adsFeature').onclick = () => mintBtn.click();
+        document.getElementById('nftFeature').onclick = () => {
+            document.querySelector('[data-tab="nft"]').click();
+        };
+
+        // === INIT ===
+        fetchLiveData();
+        setInterval(fetchLiveData, 30000);
+        updateBalance();
+        updateWalletUI();
+        checkCooldown();
+        tg.ready();
+        tg.HapticFeedback.impactOccurred('light');
     </script>
 </body>
 </html>
